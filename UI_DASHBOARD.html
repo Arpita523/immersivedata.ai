@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow UI Dashboard</title>
+    <!-- Standalone React for Direct Viewing -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+        body { margin: 0; background: #050505; font-family: -apple-system, system-ui, sans-serif; color: white; padding: 40px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 42px; margin-bottom: 50px; background: linear-gradient(to right, #4ade80, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px; }
+        .section-title { text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 3px; opacity: 0.4; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Workflow UI Dashboard</h1>
+        <div id="root"></div>
+    </div>
+
+    <script>
+        // --- Inlined Logic for Q4 (Fixes and Robustness) ---
+        function evaluate(documents) {
+            if (!Array.isArray(documents)) return { decision: "REJECTED", reason: "Invalid input" };
+            const invoice = documents.find(d => d && d.type === "invoice");
+            const po = documents.find(d => d && d.type === "purchase_order");
+            if (!invoice) return { decision: "REJECTED", reason: "Invoice document is missing" };
+            if (!po) return { decision: "REJECTED", reason: "Purchase order is missing" };
+            if (invoice.amount === po.amount) return { decision: "APPROVED", reason: "Amounts match successfully" };
+            return { decision: "REJECTED", reason: `Mismatch: $${invoice.amount} vs $${po.amount}` };
+        }
+
+        // --- Inlined Premium UI for Q3 ---
+        const WorkflowResult = ({ decision, reason }) => {
+            const isApp = decision === "APPROVED";
+            const accent = isApp ? '#4ade80' : '#f87171';
+            const glow = isApp ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+            
+            return React.createElement('div', { 
+                style: { padding: '48px', borderRadius: '32px', backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', boxShadow: `0 20px 40px -10px ${glow}` }
+            },
+                React.createElement('div', { style: { fontSize: '48px', marginBottom: '20px', color: accent } }, isApp ? '✓' : '✕'),
+                React.createElement('h2', { style: { fontSize: '28px', color: accent, textTransform: 'uppercase', margin: '0 0 12px 0' } }, decision),
+                React.createElement('p', { style: { opacity: 0.6, fontSize: '16px', margin: 0 } }, reason)
+            );
+        };
+
+        // --- Inlined Premium UI for Q4 ---
+        const DocumentEvaluator = ({ documents }) => {
+            const res = evaluate(documents);
+            const inv = documents.find(d => d.type === "invoice") || { amount: '?' };
+            const po = documents.find(d => d.type === "purchase_order") || { amount: '?' };
+            
+            return React.createElement('div', { 
+                style: { padding: '40px', background: 'rgba(23,23,23,0.8)', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }
+            },
+                React.createElement('span', { style: { fontSize: '10px', color: res.decision === "APPROVED" ? '#4ade80' : '#f87171', letterSpacing: '2px', fontWeight: '800' } }, "DOCUMENT VERIFICATION"),
+                React.createElement('h2', { style: { fontSize: '24px', margin: '16px 0 8px 0' } }, res.decision === "APPROVED" ? "Sync Validated" : "Verification Failed"),
+                React.createElement('p', { style: { opacity: 0.5, fontSize: '14px', marginBottom: '32px' } }, res.reason),
+                React.createElement('div', { style: { display: 'flex', justifyContent: 'space-around', background: 'rgba(255,255,255,0.03)', padding: '24px', borderRadius: '20px' } },
+                    React.createElement('div', null, 
+                        React.createElement('div', { style: { fontSize: '10px', opacity: 0.4 } }, "INVOICE"),
+                        React.createElement('div', { style: { fontSize: '20px', fontWeight: '700' } }, `$${inv.amount}`)
+                    ),
+                    React.createElement('div', { style: { opacity: 0.2, fontSize: '24px' } }, "↔"),
+                    React.createElement('div', null, 
+                        React.createElement('div', { style: { fontSize: '10px', opacity: 0.4 } }, "PO"),
+                        React.createElement('div', { style: { fontSize: '20px', fontWeight: '700' } }, `$${po.amount}`)
+                    )
+                )
+            );
+        };
+
+        const App = () => {
+            const params = new URLSearchParams(window.location.search);
+            const view = params.get('view');
+
+            const showQ3 = !view || view === 'q3';
+            const showQ4 = !view || view === 'q4';
+
+            return React.createElement('div', { className: 'grid' },
+                showQ3 && React.createElement('div', null,
+                    React.createElement('div', { className: 'section-title' }, "Q3 Output"),
+                    React.createElement(WorkflowResult, { decision: "APPROVED", reason: "All checks passed successfully." })
+                ),
+                showQ4 && React.createElement('div', null,
+                    React.createElement('div', { className: 'section-title' }, "Q4 Output"),
+                    React.createElement(DocumentEvaluator, { documents: [{ type: "invoice", amount: 1200 }, { type: "purchase_order", amount: 1200 }] })
+                )
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+    </script>
+</body>
+</html>

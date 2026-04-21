@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow UI Dashboard</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            background: #050505; 
+            font-family: -apple-system, sans-serif; 
+            color: white;
+            padding: 40px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 60px;
+            background: linear-gradient(to right, #4ade80, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Workflow UI Dashboard</h1>
+        <div id="root"></div>
+    </div>
+
+    <script type="module">
+        import WorkflowResult from './q3.js';
+        import DocumentEvaluator from './q4.js';
+
+        const App = () => {
+            return React.createElement('div', { className: 'grid' },
+                React.createElement('div', null,
+                    React.createElement('div', { className: 'section-title' }, "Q3: Workflow Result"),
+                    React.createElement(WorkflowResult, { 
+                        decision: "APPROVED", 
+                        reason: "All checks passed successfully." 
+                    })
+                ),
+                React.createElement('div', null,
+                    React.createElement('div', { className: 'section-title' }, "Q4: Document Evaluator"),
+                    React.createElement(DocumentEvaluator, { 
+                        documents: [
+                            { type: "invoice", amount: 2500 },
+                            { type: "purchase_order", amount: 2500 }
+                        ] 
+                    })
+                )
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
+</body>
+</html>
